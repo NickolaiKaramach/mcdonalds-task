@@ -1,6 +1,7 @@
 package by.etc.karamach.restaurant.mcdonald.cashwindow.states;
 
 import by.etc.karamach.restaurant.mcdonald.cashwindow.McdonaldCashWindow;
+import by.etc.karamach.restaurant.mcdonald.customer.RegisteredVisitor;
 import by.etc.karamach.restaurant.mcdonald.customer.RestaurantVisitor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,6 +22,20 @@ public class DeliveryState implements State {
             TimeUnit.SECONDS.sleep(5);
             logger.info(visitor.getName() + " take products.");
 
+        } catch (InterruptedException e) {
+            logger.info(visitor.getName() + "don't wait.");
+        } finally {
+
+            cashWindow.changeState(StateName.valueOf("REST"));
+
+            logger.info(visitor.getName() + " leave restaurant");
+        }
+    }
+
+    public void handleCustomer(RegisteredVisitor visitor) {
+        try {
+            TimeUnit.SECONDS.sleep(3);
+            logger.info(visitor.getName() + " take products.");
         } catch (InterruptedException e) {
             logger.info(visitor.getName() + "don't wait.");
         } finally {

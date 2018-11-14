@@ -1,17 +1,16 @@
 package by.etc.karamach.restaurant.mcdonald;
 
 import by.etc.karamach.restaurant.mcdonald.cashwindow.McdonaldCashWindow;
+import by.etc.karamach.restaurant.mcdonald.customer.RegisteredVisitor;
 import by.etc.karamach.restaurant.mcdonald.customer.RestaurantVisitor;
 
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class Runner {
     public static void main(String[] args) throws InterruptedException {
-        ReentrantLock lock1 = new ReentrantLock();
-        ReentrantLock lock2 = new ReentrantLock();
-        McdonaldCashWindow cashWindow1 = new McdonaldCashWindow(lock1, "Window1");
-        McdonaldCashWindow cashWindow2 = new McdonaldCashWindow(lock2, "Window2");
+
+        McdonaldCashWindow cashWindow1 = new McdonaldCashWindow("Window1");
+        McdonaldCashWindow cashWindow2 = new McdonaldCashWindow("Window2");
 
         RestaurantVisitor visitor1 = new RestaurantVisitor(cashWindow1, "Customer1");
         RestaurantVisitor visitor2 = new RestaurantVisitor(cashWindow1, "Customer2");
@@ -21,6 +20,8 @@ public class Runner {
         RestaurantVisitor visitor5 = new RestaurantVisitor(cashWindow2, "Customer5");
         RestaurantVisitor visitor6 = new RestaurantVisitor(cashWindow2, "Customer6");
 
+        RegisteredVisitor registeredVisitor = new RegisteredVisitor(cashWindow1, "Registered1");
+        Thread threadRegistred = new Thread(registeredVisitor);
         Thread thread1 = new Thread(visitor1);
         Thread thread2 = new Thread(visitor2);
         Thread thread3 = new Thread(visitor3);
@@ -41,6 +42,9 @@ public class Runner {
         thread5.start();
         thread6.start();
 
+        TimeUnit.SECONDS.sleep(3);
+
+        threadRegistred.start();
         System.out.println("All customers came!");
 
     }

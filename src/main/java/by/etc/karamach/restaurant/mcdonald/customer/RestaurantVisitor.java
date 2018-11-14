@@ -4,6 +4,7 @@ import by.etc.karamach.restaurant.mcdonald.cashwindow.McdonaldCashWindow;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class RestaurantVisitor implements Runnable, Customer {
@@ -21,13 +22,33 @@ public class RestaurantVisitor implements Runnable, Customer {
     }
 
     public void run() {
-        ReentrantLock locker = cashWindow.getLocker();
+        logger.info(name + " came to restaurant and take place to " + cashWindow.getName());
+        cashWindow.addVisitor(this);
 
-        locker.lock();
+        ReentrantLock lockerDelivery = cashWindow.getLockerForDelivery();
+        ReentrantLock lockForAll = cashWindow.getLockerAllVisitors();
 
-        cashWindow.handleCustomer(this);
+        Condition condition = cashWindow.getLockForAllCondition();
 
-        locker.unlock();
+
+        try {
+            lockForAll.lock();
+
+            while (lockerDelivery.isLocked()) {
+                condition.await();
+            }
+
+            lockerDelivery.lock();
+            cashWindow.handleCustomer(this);
+            lockerDelivery.unlock();
+        } catch (InterruptedException e) {
+            logger.info("Customer: " + name + " go away!");
+        } finally {
+            lockForAll.unlock();
+        }
+
+
+        //locker.unlock();
 
     }
 }
