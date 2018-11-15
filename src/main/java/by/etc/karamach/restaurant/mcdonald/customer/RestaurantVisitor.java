@@ -22,9 +22,9 @@ public class RestaurantVisitor implements Runnable, Customer {
     }
 
     public void run() {
-        logger.info(name + " came to restaurant and take place to " + cashWindow.getName());
-        cashWindow.addVisitor(this);
-
+        if (logger.isInfoEnabled()) {
+            logger.info("<" + name + "> came to the restaurant and took a turn to <" + cashWindow.getName() + ">");
+        }
         ReentrantLock lockerDelivery = cashWindow.getLockerForDelivery();
         ReentrantLock lockForAll = cashWindow.getLockerAllVisitors();
 
@@ -39,16 +39,18 @@ public class RestaurantVisitor implements Runnable, Customer {
             }
 
             lockerDelivery.lock();
+
+            if (logger.isInfoEnabled()) {
+                logger.info("<" + name + "'s> turn came!");
+            }
             cashWindow.handleCustomer(this);
+
             lockerDelivery.unlock();
+
         } catch (InterruptedException e) {
-            logger.info("Customer: " + name + " go away!");
+            logger.error("Customer: <" + name + "> left the restaurant!");
         } finally {
             lockForAll.unlock();
         }
-
-
-        //locker.unlock();
-
     }
 }
