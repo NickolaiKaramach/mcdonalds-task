@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ProcessingState implements State {
     private static final Logger logger = LogManager.getLogger("default");
-    private static final int ORDER_PLACING_DURATION = 5;
+    private static final int ORDER_PLACING_DURATION = 5;//5
 
     private final McdonaldCashWindow cashWindow;
 
@@ -37,9 +37,9 @@ public class ProcessingState implements State {
 
             cashWindow.changeState(StateName.DELIVERY);
 
-            if (logger.isInfoEnabled()) {
-                logger.info("<" + visitor.getName() + "> put an order. Visitor is waiting for delivery of products");
-            }
+            loggerPrintInfo("<" + visitor.getName() +
+                    "> put an order. Visitor is waiting for delivery of products");
+
 
             cashWindow.handleCustomer(visitor);
 
@@ -49,6 +49,12 @@ public class ProcessingState implements State {
 
             cashWindow.changeState(StateName.REST);
             logger.error("<" + visitor.getName() + "> leave restaurant");
+        }
+    }
+
+    private void loggerPrintInfo(String message) {
+        if (logger.isInfoEnabled()) {
+            logger.info(message);
         }
     }
 }

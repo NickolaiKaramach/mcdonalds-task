@@ -22,35 +22,43 @@ public class RestaurantVisitor implements Runnable, Customer {
     }
 
     public void run() {
+
         if (logger.isInfoEnabled()) {
-            logger.info("<" + name + "> came to the restaurant and took a turn to <" + cashWindow.getName() + ">");
+            logger.info("<" + name + "> came to the restaurant and took a turn to <" +
+                    cashWindow.getName() + ">");
         }
-        ReentrantLock lockerDelivery = cashWindow.getLockerForDelivery();
-        ReentrantLock lockForAll = cashWindow.getLockerAllVisitors();
+
+        ReentrantLock lockerForDelivery;
+        ReentrantLock lockerAllVisitors;
+
+        lockerAllVisitors = cashWindow.getLockerAllVisitors();
+        lockerForDelivery = cashWindow.getLockerForDelivery();
 
         Condition condition = cashWindow.getLockForAllCondition();
 
-
         try {
-            lockForAll.lock();
+            lockerAllVisitors.lock();
 
-            while (lockerDelivery.isLocked()) {
+//            while (lockerForDelivery.isLocked()) {
+//                condition.await();
+//            }
+            if (lockerForDelivery.isLocked()) {
                 condition.await();
             }
 
-            lockerDelivery.lock();
+            lockerForDelivery.lock();
 
             if (logger.isInfoEnabled()) {
                 logger.info("<" + name + "'s> turn came!");
             }
             cashWindow.handleCustomer(this);
 
-            lockerDelivery.unlock();
+            lockerForDelivery.unlock();
 
         } catch (InterruptedException e) {
             logger.error("Customer: <" + name + "> left the restaurant!");
         } finally {
-            lockForAll.unlock();
+            lockerAllVisitors.unlock();
         }
     }
 }

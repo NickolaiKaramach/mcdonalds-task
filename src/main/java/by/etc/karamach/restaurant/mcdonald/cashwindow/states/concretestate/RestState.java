@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 public class RestState implements State {
     private static final Logger logger = LogManager.getLogger("default");
-    private static final int GREETING_TIME_DURATION = 2;
+    private static final int GREETING_TIME_DURATION = 2;//2
 
     private final McdonaldCashWindow cashWindow;
 
@@ -31,10 +31,8 @@ public class RestState implements State {
             cashWindow.changeState(StateName.PROCESSING);
 
 
-            if (logger.isInfoEnabled()) {
-                logger.info("<" + visitor.getName() + "> came to <" +
-                        cashWindow.getName() + ">. Trying to serve visitor.");
-            }
+            loggerPrintInfo("<" + visitor.getName() + "> came to <" +
+                    cashWindow.getName() + ">. Trying to serve visitor.");
 
             cashWindow.handleCustomer(visitor);
 
@@ -53,5 +51,11 @@ public class RestState implements State {
         cashWindow.changeState(StateName.DELIVERY);
 
         cashWindow.handleCustomer(visitor);
+    }
+
+    private void loggerPrintInfo(String message) {
+        if (logger.isInfoEnabled()) {
+            logger.info(message);
+        }
     }
 }

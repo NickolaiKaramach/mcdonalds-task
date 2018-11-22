@@ -14,8 +14,8 @@ import java.util.concurrent.TimeUnit;
 public class DeliveryState implements State {
     private static final Logger logger = LogManager.getLogger("default");
 
-    private static final int COLLECTION_OF_PRODUCTS_DURATION = 5;
-    private static final int DELIVERY_OF_PREPARED_PRODUCTS_DURATION = 3;
+    private static final int COLLECTION_OF_PRODUCTS_DURATION = 5;//5
+    private static final int DELIVERY_OF_PREPARED_PRODUCTS_DURATION = 3;//3
 
     private final McdonaldCashWindow cashWindow;
 
@@ -40,18 +40,22 @@ public class DeliveryState implements State {
 
             TimeUnit.SECONDS.sleep(waitingTime);
 
-            if (logger.isInfoEnabled()) {
-                logger.info("<" + visitor.getName() + "> got products");
-            }
+            loggerPrintInfo("<" + visitor.getName() + "> got products");
+
 
         } catch (InterruptedException e) {
             logger.error("<" + visitor.getName() + "> don't wait");
         } finally {
 
             cashWindow.changeState(StateName.REST);
-            if (logger.isInfoEnabled()) {
-                logger.info("<" + visitor.getName() + "> leave restaurant");
-            }
+
+            loggerPrintInfo("<" + visitor.getName() + "> leave restaurant");
+        }
+    }
+
+    private void loggerPrintInfo(String message) {
+        if (logger.isInfoEnabled()) {
+            logger.info(message);
         }
     }
 }

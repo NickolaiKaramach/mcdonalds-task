@@ -9,6 +9,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class RegisteredVisitor implements Customer, Runnable {
     private static final Logger logger = LogManager.getLogger("default");
+    private static final int TIME_TO_PLACE_ORDER = 4;//4
+    private static final int TIME_TO_COME_TO_RESTAURANT = 2;//2
     private McdonaldCashWindow cashWindow;
     private String name;
 
@@ -24,31 +26,38 @@ public class RegisteredVisitor implements Customer, Runnable {
     public void run() {
         try {
 
-            TimeUnit.SECONDS.sleep(4);
-            if (logger.isInfoEnabled()) {
-                logger.info("<" + name + "> place an order via the Internet");
-            }
-            TimeUnit.SECONDS.sleep(2);
+            TimeUnit.SECONDS.sleep(TIME_TO_PLACE_ORDER);
 
-            ReentrantLock locker = cashWindow.getLockerForDelivery();
-            ReentrantLock lockerForAll = cashWindow.getLockerAllVisitors();
+            if (logger.isInfoEnabled()) {
+                logger.info("<" + name + "> placed an order via Internet");
+            }
+
+            ReentrantLock lockerForDelivery;
+            ReentrantLock lockerAllVisitors;
+
+            lockerAllVisitors = cashWindow.getLockerAllVisitors();
+            lockerForDelivery = cashWindow.getLockerForDelivery();
+
+            TimeUnit.SECONDS.sleep(TIME_TO_COME_TO_RESTAURANT);
+
             if (logger.isInfoEnabled()) {
                 logger.info("<" + name + "> arrived to the restaurant");
             }
 
-            locker.lock();
-            lockerForAll.lock();
+            lockerForDelivery.lock();
+            lockerAllVisitors.lock();
 
             if (logger.isInfoEnabled()) {
-                logger.info(name + " come to <" + cashWindow.getName() + "> to take his order");
+                logger.info("<" + name + "> come to <" +
+                        cashWindow.getName() + "> to take his order");
             }
 
             cashWindow.handleCustomer(this);
 
             cashWindow.getLockForAllCondition().signalAll();
 
-            locker.unlock();
-            lockerForAll.unlock();
+            lockerForDelivery.unlock();
+            lockerAllVisitors.unlock();
 
 
         } catch (InterruptedException e) {

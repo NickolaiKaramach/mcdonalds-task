@@ -10,13 +10,13 @@ import java.util.concurrent.TimeUnit;
 
 public class Runner {
     private static final Logger logger = LogManager.getLogger("default");
+    private static final int TIME_BEFORE_REGISTERED_COME = 3;
+    private static final int TIME_BEFORE_NEXT_CASH_WINDOW_OPENED = 2;
 
     public static void main(String[] args) throws InterruptedException {
 
         McdonaldCashWindow cashWindow1 = new McdonaldCashWindow("Window 1");
         McdonaldCashWindow cashWindow2 = new McdonaldCashWindow("Window 2");
-
-        System.out.println(cashWindow1);
 
         RestaurantVisitor visitor1 = new RestaurantVisitor(cashWindow1, "Customer 1");
         RestaurantVisitor visitor2 = new RestaurantVisitor(cashWindow1, "Customer 2");
@@ -47,14 +47,14 @@ public class Runner {
         thread3.start();
 
         //Sleep to make difference in time for two groups
-        TimeUnit.SECONDS.sleep(2);
+        TimeUnit.SECONDS.sleep(TIME_BEFORE_NEXT_CASH_WINDOW_OPENED);
 
         thread4.start();
         thread5.start();
         thread6.start();
 
         //Sleep to make difference in time for registered customers
-        TimeUnit.SECONDS.sleep(3);
+        TimeUnit.SECONDS.sleep(TIME_BEFORE_REGISTERED_COME);
 
         threadRegistered1.start();
         threadRegistered2.start();
