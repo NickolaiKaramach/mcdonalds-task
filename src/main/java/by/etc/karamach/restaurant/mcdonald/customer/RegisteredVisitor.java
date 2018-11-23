@@ -61,7 +61,6 @@ public class RegisteredVisitor implements Customer, Runnable {
 
 
         } catch (InterruptedException e) {
-            //TODO:QUESTION: can we simple don't catch exceptions, only log them?
             logger.error("<" + name + "> changed his mind");
         }
 

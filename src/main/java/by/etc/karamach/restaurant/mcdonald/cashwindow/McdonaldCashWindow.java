@@ -15,7 +15,6 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class McdonaldCashWindow {
-    //TODO:QUESTION: can we make actions classes for every cash window
     private RestState restState;
     private ProcessingState processingState;
     private DeliveryState deliveryState;
